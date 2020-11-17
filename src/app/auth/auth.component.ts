@@ -62,6 +62,11 @@ export class AuthComponent implements OnDestroy {
     );
   }
 
+  onHandleError(): void {
+    //reset error
+    this.error = null;
+  }
+
   ngOnDestroy() {
     this._authSub$?.unsubscribe();
   }
