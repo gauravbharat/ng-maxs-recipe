@@ -1,7 +1,15 @@
-import { Component, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ComponentFactoryResolver,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
+
+import { AlertComponent } from '../shared/alert/alert.component';
+import { PlaceHolderDirective } from '../shared/placeholder/placeholder.directive';
 import { AuthResponseData, AuthService } from './auth.sevice';
 
 @Component({
@@ -20,9 +28,18 @@ export class AuthComponent implements OnDestroy {
   isLoading = false;
   error: string = null;
 
-  private _authSub$: Subscription;
+  /** Pass the directive name to the ViewChild to get the ref to its first found instance.
+   * {static: false} is set by default */
+  @ViewChild(PlaceHolderDirective) alertHost: PlaceHolderDirective;
 
-  constructor(private _authService: AuthService, private _router: Router) {}
+  private _authSub$: Subscription;
+  private _closeErrorSub$: Subscription;
+
+  constructor(
+    private _authService: AuthService,
+    private _router: Router,
+    private _componentFactoryResolver: ComponentFactoryResolver
+  ) {}
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -57,6 +74,7 @@ export class AuthComponent implements OnDestroy {
       (errorMessage) => {
         console.log(errorMessage);
         this.error = errorMessage;
+        this._showErrorAlert(errorMessage);
         this.isLoading = false;
       }
     );
@@ -67,7 +85,32 @@ export class AuthComponent implements OnDestroy {
     this.error = null;
   }
 
+  private _showErrorAlert(errorMessage: string) {
+    // dynamically create alert component
+    // const alertCmp = new AlertComponent() WON'T WORK
+    // Use resolver to get access to component factory
+    const alertComponentFactory = this._componentFactoryResolver.resolveComponentFactory(
+      AlertComponent
+    );
+    // ViewContainer allows to interact with that place in the DOM
+    const hostViewContainerRef = this.alertHost.viewContainerRef;
+
+    // clear everything on that view container place before rendering anything new
+    hostViewContainerRef.clear();
+
+    const componentRef = hostViewContainerRef.createComponent(
+      alertComponentFactory
+    );
+
+    componentRef.instance.message = errorMessage;
+    this._closeErrorSub$ = componentRef.instance.close.subscribe(() => {
+      this._closeErrorSub$?.unsubscribe();
+      hostViewContainerRef.clear();
+    });
+  }
+
   ngOnDestroy() {
     this._authSub$?.unsubscribe();
+    this._closeErrorSub$?.unsubscribe();
   }
 }

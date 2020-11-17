@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 // import { BetterHighlightDirective } from './utils/better-hightlight.directive'; //Attribute
 // import { UnlessDirective } from './utils/unless.directive'; //Structural
 import { DropDownDirective } from './shared/dropdown.directive';
+import { PlaceHolderDirective } from './shared/placeholder/placeholder.directive';
 
 /** Custome Pipes (for templates) */
 import { ShortenPipe } from './recipes/shorten.pipe';
@@ -54,7 +55,7 @@ import { AlertComponent } from './shared/alert/alert.component';
     ShortenPipe,
     AuthComponent,
     LoadingSpinnerComponent,
-    AlertComponent,
+    PlaceHolderDirective,
   ],
   imports: [
     BrowserModule,
@@ -74,5 +75,7 @@ import { AlertComponent } from './shared/alert/alert.component';
     },
   ],
   bootstrap: [AppComponent],
+  /** entryComponents prop: Dynamic components needs to be informed to Angular here */
+  entryComponents: [AlertComponent],
 })
 export class AppModule {}
