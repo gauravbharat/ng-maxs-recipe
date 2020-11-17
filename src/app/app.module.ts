@@ -20,14 +20,13 @@ import { AuthInterceptorService } from './auth/auth-interceptor.service';
 /** Customer Components */
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
-import { ShoppingListComponent } from './shopping-list/shopping-list.component';
-import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-edit.component';
 import { AuthComponent } from './auth/auth.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { AlertComponent } from './shared/alert/alert.component';
 
 /** Custom Modules */
 import { RecipesModule } from './recipes/recipes.module';
+import { ShoppingListModule } from './shopping-list/shopping-list.module';
 
 @NgModule({
   declarations: [
@@ -37,8 +36,7 @@ import { RecipesModule } from './recipes/recipes.module';
     // BetterHighlightDirective,
     // UnlessDirective,
     HeaderComponent,
-    ShoppingListComponent,
-    ShoppingEditComponent,
+
     AuthComponent,
     LoadingSpinnerComponent,
     PlaceHolderDirective,
@@ -50,6 +48,7 @@ import { RecipesModule } from './recipes/recipes.module';
     AppRoutingModule,
     HttpClientModule,
     RecipesModule,
+    ShoppingListModule,
   ],
   providers: [
     RecipeService,
