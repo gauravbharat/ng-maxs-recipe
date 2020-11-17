@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="col-xs-12">
+    <button class="btn btn-success" (click)="onNewRecipe()">New Recipe</button>
+  </div>
+</div>
+<hr />
+<div class="row">
+  <div class="col-xs-12">
+    <app-recipe-item
+      *ngFor="let recipe of recipes; let i = index"
+      [recipe]="recipe"
+      [index]="i"
+    ></app-recipe-item>
+  </div>
+</div>
+<!-- Custom Directives, with custom property binding with or without rectangular brackets
+  appBasicHighlight: custom attribute directive
+  appUnless: custom structural directive
+  appBetterHighlight: custom attribute directive
+<p *ngIf="recipes.length === 0" appBasicHighlight>Basic highlight directive</p>
+<p
+  *appUnless="recipes.length === 0"
+  appBetterHighlight
+  [highlightColor]="'orange'"
+  defaultColor="yellow"
+>
+  Better highlight directive
+</p>
+-->
+<!-- <ng-template #betterHigh> -->
+<!-- </ng-template> -->

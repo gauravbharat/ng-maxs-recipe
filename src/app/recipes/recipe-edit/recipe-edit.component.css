@@ -1,0 +1,5 @@
+/* show red on required controls, only when invalid value and are touched/clicked */
+input.ng-invalid.ng-touched,
+textarea.ng-invalid.ng-touched {
+  border: 1px solid red;
+}
