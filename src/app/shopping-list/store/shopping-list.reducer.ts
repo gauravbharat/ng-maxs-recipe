@@ -6,14 +6,10 @@ import * as SLA from './shopping-list.actions';
 /** Create a interface for the type of state this reducer would handle.
  * Use this interface at those places where the ngrx Store 'shoppingList' is used
  */
-export interface ShoppingListState {
+export interface State {
   ingredients: Ingredient[];
   editedIngredient: Ingredient;
   editedIngredientIndex: number;
-}
-
-export interface AppState {
-  shoppingList: ShoppingListState;
 }
 
 /** Create an initial state for shopping-list, an initial array of ingredients
@@ -23,7 +19,7 @@ export interface AppState {
  * This will now be handled by dispatching a state from the shopping list component for the selected item, then observing that
  * in that shopping edit component
  */
-const initialState: ShoppingListState = {
+const initialState: State = {
   ingredients: [new Ingredient('Apples', 5), new Ingredient('Tomatoes', 10)],
   editedIngredient: null,
   editedIngredientIndex: -1,

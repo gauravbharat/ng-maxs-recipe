@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Ingredient } from '../shared/ingredient.model';
 
-import * as fromShoppingList from './store/shopping-list.reducer';
+import * as fromApp from '../store/app.reducer';
 import * as ShoppingListActions from './store/shopping-list.actions';
 
 @Component({
@@ -18,7 +18,7 @@ export class ShoppingListComponent implements OnInit {
   /** Import NgRx Store to get access to application state
    * Set the type of the store to what the shoppingList part/area of the store returns, an Ingrdients array
    */
-  constructor(private _store: Store<fromShoppingList.AppState>) {}
+  constructor(private _store: Store<fromApp.AppState>) {}
 
   ngOnInit(): void {
     /** NgRx and Angular shall unsubscribe from this observable, so no need of manual unsubscribe

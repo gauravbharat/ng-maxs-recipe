@@ -19,7 +19,7 @@ import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core.module';
 
 /** NgRx reducers */
-import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
+import * as fromApp from './store/app.reducer';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -35,7 +35,7 @@ import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer
      * forRoot({feature: reducer})
      * NgRx will call the Reducer with the action it received and with the current state
      */
-    StoreModule.forRoot({ shoppingList: shoppingListReducer }),
+    StoreModule.forRoot(fromApp.appReducer),
   ],
 
   bootstrap: [AppComponent],

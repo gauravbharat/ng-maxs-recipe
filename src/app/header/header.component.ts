@@ -5,9 +5,12 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { pipe, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.sevice';
 import { DataStorageService } from '../shared/data-storage.service';
+import { AppState } from '../store/app.reducer';
 
 @Component({
   selector: 'app-header',
@@ -33,13 +36,17 @@ export class HeaderComponent implements OnDestroy, OnInit {
 
   constructor(
     private _dataStorageService: DataStorageService,
-    private _authService: AuthService
+    private _authService: AuthService,
+    private _store: Store<AppState>
   ) {}
 
   ngOnInit() {
-    this._userSub$ = this._authService.authUser.subscribe((user) => {
-      this.isAuthenticated = !!user;
-    });
+    this._userSub$ = this._store
+      .select('auth')
+      .pipe(map((authState) => authState.user))
+      .subscribe((user) => {
+        this.isAuthenticated = !!user;
+      });
   }
 
   onSaveData(): void {

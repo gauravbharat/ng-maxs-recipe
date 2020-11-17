@@ -7,12 +7,14 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { exhaustMap, take } from 'rxjs/operators';
-import { AuthService } from './auth.sevice';
+import { Store } from '@ngrx/store';
+import { exhaustMap, take, map } from 'rxjs/operators';
+
+import { AppState } from '../store/app.reducer';
 
 @Injectable()
 export class AuthInterceptorService implements HttpInterceptor {
-  constructor(private _authService: AuthService) {}
+  constructor(private _store: Store<AppState>) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     /** The Take(1) rxjs operator informs angular that we wish to take just 1 value and unsubscribe from the subscription.
@@ -26,8 +28,12 @@ export class AuthInterceptorService implements HttpInterceptor {
      * 3. exhauseMap replaces the outer observable (authUser) with the inner observable(next.handle) in the observable chain, and in the end
      * the inner observable (next.handle) is returned to the observer
      */
-    return this._authService.authUser.pipe(
+    return this._store.select('auth').pipe(
       take(1),
+      map((authState) => {
+        // Return only the user value from the Auth State
+        return authState.user;
+      }),
       exhaustMap((user) => {
         if (!user) return next.handle(req);
 

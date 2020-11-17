@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 
 import { Ingredient } from '../../shared/ingredient.model';
 import * as ShoppingListActions from '../store/shopping-list.actions';
-import * as fromShoppingList from '../store/shopping-list.reducer';
+import * as fromApp from '../../store/app.reducer';
 
 @Component({
   selector: 'app-shopping-edit',
@@ -18,7 +18,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   editMode = false;
   @ViewChild('form') _form: NgForm;
 
-  constructor(private _store: Store<fromShoppingList.AppState>) {}
+  constructor(private _store: Store<fromApp.AppState>) {}
 
   ngOnInit(): void {
     /** Instead of using the ShoppingList service and subscribing to the startedEditing Subject for the emitted values, using NgRx,
