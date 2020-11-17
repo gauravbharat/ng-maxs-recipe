@@ -78,7 +78,28 @@ export class AuthService {
 
   logout() {
     this.authUser.next(null);
+    localStorage.removeItem('userData');
     this._router.navigate(['/auth']);
+  }
+
+  autoLogin() {
+    // Deserialize: string userData to JS object
+    const userData: {
+      email: string;
+      id: string;
+      _token: string;
+      _tokenExpirationDate: string;
+    } = JSON.parse(localStorage.getItem('userData'));
+    // console.log('autoLogin', userData);
+    if (!userData) return;
+
+    const loadedUser = new User(
+      userData.email,
+      userData.id,
+      userData._token,
+      new Date(userData._tokenExpirationDate)
+    );
+    if (loadedUser.token) this.authUser.next(loadedUser);
   }
 
   private _handleAuthentication(
@@ -90,6 +111,8 @@ export class AuthService {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new User(email, localId, idToken, expirationDate);
     this.authUser.next(user);
+    // Serialize user data object, i.e. convert to string before storing to local storage
+    localStorage.setItem('userData', JSON.stringify(user));
   }
 
   /** Passing _handleAuthentication as a function argument to tap failed, since the authUser subject was ALWAYS undefined */
