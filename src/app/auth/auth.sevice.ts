@@ -19,6 +19,7 @@ export interface AuthResponseData {
 export class AuthService {
   // BehaviorSubject: Shall retain a value even after the event is emitted
   authUser = new BehaviorSubject<User>(null);
+  private _timerRef: any;
 
   constructor(private _http: HttpClient, private _router: Router) {}
 
@@ -76,12 +77,6 @@ export class AuthService {
       );
   }
 
-  logout() {
-    this.authUser.next(null);
-    localStorage.removeItem('userData');
-    this._router.navigate(['/auth']);
-  }
-
   autoLogin() {
     // Deserialize: string userData to JS object
     const userData: {
@@ -99,7 +94,26 @@ export class AuthService {
       userData._token,
       new Date(userData._tokenExpirationDate)
     );
-    if (loadedUser.token) this.authUser.next(loadedUser);
+    if (loadedUser.token) {
+      this.authUser.next(loadedUser);
+      const expirationDuration =
+        new Date(userData._tokenExpirationDate).getTime() -
+        new Date().getTime();
+      this.autoLogout(expirationDuration);
+    }
+  }
+
+  logout() {
+    this.authUser.next(null);
+    localStorage.removeItem('userData');
+    this._timerRef && clearTimeout(this._timerRef);
+    this._router.navigate(['/auth']);
+  }
+
+  autoLogout(expirationDuration: number) {
+    this._timerRef = setTimeout(() => {
+      this.logout;
+    }, expirationDuration);
   }
 
   private _handleAuthentication(
@@ -111,6 +125,7 @@ export class AuthService {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new User(email, localId, idToken, expirationDate);
     this.authUser.next(user);
+    this.autoLogout(expiresIn * 1000);
     // Serialize user data object, i.e. convert to string before storing to local storage
     localStorage.setItem('userData', JSON.stringify(user));
   }
