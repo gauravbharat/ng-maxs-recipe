@@ -5,13 +5,11 @@ import { AuthInterceptorService } from './auth/auth-interceptor.service';
 
 /** Custom Feature services (better approach, use {providedIn: 'root'} for these) */
 import { RecipeService } from './recipes/recipe.service';
-import { ShoppingService } from './shopping-list/shopping-list.service';
 
 @NgModule({
   /** Services are not required to be exported (like components), since they are automatically injected in the root module */
   providers: [
     RecipeService,
-    ShoppingService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptorService,

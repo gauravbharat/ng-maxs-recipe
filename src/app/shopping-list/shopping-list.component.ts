@@ -1,44 +1,34 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import { Ingredient } from '../shared/ingredient.model';
-import { ShoppingService } from './shopping-list.service';
+
+import * as fromShoppingList from './store/shopping-list.reducer';
+import * as ShoppingListActions from './store/shopping-list.actions';
 
 @Component({
   selector: 'app-shopping-list',
   templateUrl: './shopping-list.component.html',
   styleUrls: ['./shopping-list.component.css'],
 })
-export class ShoppingListComponent implements OnInit, OnDestroy {
-  ingredients: Ingredient[];
-  private _ingredientsAddedSub$: Subscription;
+export class ShoppingListComponent implements OnInit {
+  /** Set the ingredients of type observable, as returned by the store.select() method */
+  ingredients: Observable<{ ingredients: Ingredient[] }>;
 
-  constructor(private _shoppingService: ShoppingService) {}
+  /** Import NgRx Store to get access to application state
+   * Set the type of the store to what the shoppingList part/area of the store returns, an Ingrdients array
+   */
+  constructor(private _store: Store<fromShoppingList.AppState>) {}
 
   ngOnInit(): void {
-    this._getIngredients();
-
-    this._ingredientsAddedSub$ = this._shoppingService.ingredientChanged.subscribe(
-      () => {
-        // Refresh local list
-        this._getIngredients();
-      }
-    );
-  }
-
-  ngOnDestroy() {
-    this._ingredientsAddedSub$.unsubscribe();
+    /** NgRx and Angular shall unsubscribe from this observable, so no need of manual unsubscribe
+     * Alternative is to subscribe to select and set the ingredients array from the response. Unsubscribe is needed in that case.
+     */
+    this.ingredients = this._store.select('shoppingList');
   }
 
   onEditItem(index: number) {
-    this._shoppingService.startedEditing.next(index);
+    /** Dispatch the edit_start action to the reducer, instead of calling the shopping service Subject.next() */
+    this._store.dispatch(new ShoppingListActions.StartEdit(index));
   }
-
-  private _getIngredients(): void {
-    this.ingredients = this._shoppingService.getIngredients();
-  }
-
-  // onIngredientItem(ingredient: Ingredient) {
-  //   this._shoppingService.addIngredient()
-  //   this.ingredients.push(ingredient);
-  // }
 }

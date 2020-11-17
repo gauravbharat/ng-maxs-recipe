@@ -1,28 +1,17 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { Ingredient } from '../shared/ingredient.model';
-import { ShoppingService } from '../shopping-list/shopping-list.service';
 import { Recipe } from './recipe.model';
+import * as ShoppingListActions from '../shopping-list/store/shopping-list.actions';
+import * as fromShoppingList from '../shopping-list/store/shopping-list.reducer';
 
 @Injectable({ providedIn: 'root' })
 export class RecipeService {
-  constructor(private _shoppingService: ShoppingService) {}
+  constructor(private _storeShoppingList: Store<fromShoppingList.AppState>) {}
   // recipeSelected = new Subject<Recipe>();
   refreshRecipes = new Subject<Recipe[]>();
-  private _recipes: Recipe[] = [
-    // new Recipe(
-    //   'A Test Recipe',
-    //   'A quick samosa recipe',
-    //   'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcT7QCcOwqOwMPbBpgcUhc6KJ8Zjv0YAjJNL7w&usqp=CAU',
-    //   [new Ingredient('Flour', 2), new Ingredient('Potato', 5)]
-    // ),
-    // new Recipe(
-    //   'Another Test Recipe',
-    //   'A quick lasagna recipe',
-    //   'https://hips.hearstapps.com/vidthumb/images/180820-bookazine-delish-01280-1536610916.jpg?crop=1.00xw%3A0.846xh%3B0.00160xw%2C0.154xh&resize=480%3A270',
-    //   [new Ingredient('Durum', 3), new Ingredient('Chicken', 2)]
-    // ),
-  ];
+  private _recipes: Recipe[] = [];
 
   setRecipes(recipes: Recipe[]) {
     this._recipes = recipes;
@@ -39,7 +28,9 @@ export class RecipeService {
   }
 
   addIngredientsToShoppingList(ingredients: Ingredient[]): void {
-    this._shoppingService.addIngredients(ingredients);
+    this._storeShoppingList.dispatch(
+      new ShoppingListActions.AddIngredients(ingredients)
+    );
   }
 
   addRecipe(recipe: Recipe) {
