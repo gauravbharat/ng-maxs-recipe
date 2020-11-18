@@ -24,6 +24,7 @@ import { CoreModule } from './core.module';
 import * as fromApp from './store/app.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { AuthEffects } from './auth/store/auth.effects';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -34,18 +35,26 @@ import { AuthEffects } from './auth/store/auth.effects';
     HttpClientModule,
     SharedModule,
     CoreModule,
+
     /** import StoreModule and pass the reducers with identifiers
      * forRoot(object) tells the app which reducers are available in the application to make up the NgRx store
      * forRoot({feature: reducer})
      * NgRx will call the Reducer with the action it received and with the current state
      */
     StoreModule.forRoot(fromApp.appReducer),
+
     /** Register Effects Module. Pass an array of root Effect classes */
     EffectsModule.forRoot([AuthEffects]),
+
     /** Register NgRx devtools to be used with the Redux Devtools chrome extension.
      * Restricting Devtools output to only some logs in production
      */
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
+    StoreRouterConnectingModule.forRoot(),
+
+    /** Register NgRx router-store. React to angular routing actions by angular router.
+     * Then, write a code in ngrx effects or reducer when the routing actions happens */
+    StoreRouterConnectingModule.forRoot(),
   ],
 
   bootstrap: [AppComponent],
