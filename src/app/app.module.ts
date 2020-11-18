@@ -2,7 +2,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
+import { environment } from 'src/environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 
 // /** Custom TEST Directives */
@@ -40,6 +42,10 @@ import { AuthEffects } from './auth/store/auth.effects';
     StoreModule.forRoot(fromApp.appReducer),
     /** Register Effects Module. Pass an array of root Effect classes */
     EffectsModule.forRoot([AuthEffects]),
+    /** Register NgRx devtools to be used with the Redux Devtools chrome extension.
+     * Restricting Devtools output to only some logs in production
+     */
+    StoreDevtoolsModule.instrument({ logOnly: environment.production }),
   ],
 
   bootstrap: [AppComponent],
