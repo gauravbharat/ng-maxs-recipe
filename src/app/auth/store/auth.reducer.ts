@@ -9,10 +9,14 @@ import * as AuthActions from './auth.actions';
 /** Determine the state actors that need to be present here */
 export interface State {
   user: User;
+  authError: string;
+  loading: boolean;
 }
 
 const initialState: State = {
   user: null,
+  authError: null,
+  loading: false,
 };
 
 export function authReducer(
@@ -20,7 +24,7 @@ export function authReducer(
   action: AuthActions.AuthActionTypes
 ) {
   switch (action.type) {
-    case AuthActions.LOGIN:
+    case AuthActions.AUTHENTICATE_SUCCESS:
       const user = new User(
         action.payload.email,
         action.payload.userId,
@@ -30,12 +34,35 @@ export function authReducer(
 
       return {
         ...state,
+        authError: null,
         user,
+        loading: false,
       };
     case AuthActions.LOGOUT:
       return {
         ...state,
         user: null,
+        loading: false,
+      };
+    case AuthActions.LOGIN_START:
+    case AuthActions.SIGNUP_START:
+      return {
+        ...state,
+        authError: null,
+        loading: true,
+      };
+    case AuthActions.AUTHENTICATE_FAIL:
+      return {
+        ...state,
+        authError: action.payload,
+        user: null,
+        loading: false,
+      };
+    case AuthActions.CLEAR_ERROR:
+      return {
+        ...state,
+        authError: null,
+        loading: false,
       };
     /** Important for initialisation of State */
     default:

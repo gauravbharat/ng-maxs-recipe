@@ -2,15 +2,18 @@ import {
   Component,
   ComponentFactoryResolver,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
 
 import { AlertComponent } from '../shared/alert/alert.component';
 import { PlaceHolderDirective } from '../shared/placeholder/placeholder.directive';
-import { AuthResponseData, AuthService } from './auth.sevice';
+
+import { AppState } from '../store/app.reducer';
+import * as AuthActions from './store/auth.actions';
 
 @Component({
   selector: 'app-auth',
@@ -23,8 +26,8 @@ import { AuthResponseData, AuthService } from './auth.sevice';
     `,
   ],
 })
-export class AuthComponent implements OnDestroy {
-  isLoginMode = true;
+export class AuthComponent implements OnDestroy, OnInit {
+  isLoginMode = true; // Component specific property, no effect elsewhere
   isLoading = false;
   error: string = null;
 
@@ -36,10 +39,17 @@ export class AuthComponent implements OnDestroy {
   private _closeErrorSub$: Subscription;
 
   constructor(
-    private _authService: AuthService,
-    private _router: Router,
-    private _componentFactoryResolver: ComponentFactoryResolver
+    private _componentFactoryResolver: ComponentFactoryResolver,
+    private _store: Store<AppState>
   ) {}
+
+  ngOnInit() {
+    this._authSub$ = this._store.select('auth').subscribe((authState) => {
+      this.isLoading = authState.loading;
+      this.error = authState.authError;
+      if (this.error) this._showErrorAlert(this.error);
+    });
+  }
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -49,40 +59,21 @@ export class AuthComponent implements OnDestroy {
     this.error = null;
     if (!form.valid) return;
 
-    this.isLoading = true;
-
     const email = form.value.email;
     const password = form.value.password;
 
-    let authObs: Observable<AuthResponseData>;
-
     if (this.isLoginMode) {
       // login
-      authObs = this._authService.login(email, password);
+      this._store.dispatch(new AuthActions.LoginStart({ email, password }));
     } else {
       // signup
-      authObs = this._authService.signup(email, password);
+      this._store.dispatch(new AuthActions.SignupStart({ email, password }));
     }
-
-    this._authSub$ = authObs.subscribe(
-      (resData) => {
-        this.isLoading = false;
-        console.log(`${this.isLoginMode ? 'login' : 'signup'}`, resData);
-        form.reset();
-        this._router.navigate(['/recipes']);
-      },
-      (errorMessage) => {
-        console.log(errorMessage);
-        this.error = errorMessage;
-        this._showErrorAlert(errorMessage);
-        this.isLoading = false;
-      }
-    );
   }
 
   onHandleError(): void {
     //reset error
-    this.error = null;
+    this._store.dispatch(new AuthActions.ClearError());
   }
 
   private _showErrorAlert(errorMessage: string) {

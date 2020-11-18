@@ -20,6 +20,8 @@ import { CoreModule } from './core.module';
 
 /** NgRx reducers */
 import * as fromApp from './store/app.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { AuthEffects } from './auth/store/auth.effects';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -36,6 +38,8 @@ import * as fromApp from './store/app.reducer';
      * NgRx will call the Reducer with the action it received and with the current state
      */
     StoreModule.forRoot(fromApp.appReducer),
+    /** Register Effects Module. Pass an array of root Effect classes */
+    EffectsModule.forRoot([AuthEffects]),
   ],
 
   bootstrap: [AppComponent],

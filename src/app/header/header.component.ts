@@ -1,16 +1,11 @@
-import {
-  Component,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { pipe, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AuthService } from '../auth/auth.sevice';
 import { DataStorageService } from '../shared/data-storage.service';
+
 import { AppState } from '../store/app.reducer';
+import * as AuthActions from '../auth/store/auth.actions';
 
 @Component({
   selector: 'app-header',
@@ -28,15 +23,9 @@ export class HeaderComponent implements OnDestroy, OnInit {
   isAuthenticated = false;
   private _fetchDataSub$: Subscription;
   private _userSub$: Subscription;
-  // @Output() featureSelected = new EventEmitter<string>();
-
-  // // onSelectMenu(feature: string) {
-  // //   this.featureSelected.emit(feature);
-  // // }
 
   constructor(
     private _dataStorageService: DataStorageService,
-    private _authService: AuthService,
     private _store: Store<AppState>
   ) {}
 
@@ -58,7 +47,7 @@ export class HeaderComponent implements OnDestroy, OnInit {
   }
 
   onLogout(): void {
-    this._authService.logout();
+    this._store.dispatch(new AuthActions.Logout());
   }
 
   ngOnDestroy() {

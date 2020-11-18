@@ -4,14 +4,12 @@ import { map, tap, take, exhaustMap } from 'rxjs/operators';
 
 import { RecipeService } from '../recipes/recipe.service';
 import { Recipe } from '../recipes/recipe.model';
-import { AuthService } from '../auth/auth.sevice';
 
 @Injectable({ providedIn: 'root' })
 export class DataStorageService {
   constructor(
     private _http: HttpClient,
-    private _recipeService: RecipeService,
-    private _authService: AuthService
+    private _recipeService: RecipeService
   ) {}
 
   /** Instead of passing an argument of Recipes array to this method,
